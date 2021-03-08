@@ -38,7 +38,7 @@ public class StatsFile extends GameStats {
                     int numGuesses = Integer.parseInt(values[1]);
 
                     if (timestamp.isBefore(limit)) {
-                        statsMap.put(numGuesses, 1 + statsMap.getOrDefault(numGuesses, 0));
+                        treeMapPut(numGuesses);
                     }
                 }
                 catch(NumberFormatException nfe){
@@ -88,6 +88,10 @@ public class StatsFile extends GameStats {
             // NOTE: In a full implementation, we would log this error and possibly alert the user
             // NOTE: For this project, you do not need unit tests for handling this exception.
         }
+    }
+
+    public void treeMapPut(int numGuesses){
+        statsMap.put(numGuesses, 1 + statsMap.getOrDefault(numGuesses, 0));
     }
 
     @Override
