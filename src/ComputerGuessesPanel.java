@@ -6,8 +6,6 @@ import java.util.function.Consumer;
  * UI screen for when the computer is guessing a number
  *
  * Buttons for human response to guessed number
- *
- * TODO: refactor this class
  */
 public class ComputerGuessesPanel extends JPanel {
 
@@ -69,5 +67,4 @@ public class ComputerGuessesPanel extends JPanel {
             }
         });
     }
-
 }
