@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 /**
  * Displays statistics about how many guesses the person took during past games
- * Loads data from the file and displays in a JPanel
+ * Displays data in JPanel
  *
  * TODO: refactor this class
  */
@@ -16,6 +16,7 @@ public class StatsPanel extends JPanel {
     // A bin goes from BIN_EDGES[i] through BIN_EDGES[i+1]-1, inclusive
     private static final int [] BIN_EDGES = {1, 2, 4, 6, 8, 10, 12, 14};
     private ArrayList<JLabel> resultsLabels;
+
 
     public StatsPanel(JPanel cardsPanel) {
 
@@ -31,32 +32,14 @@ public class StatsPanel extends JPanel {
 
         this.add(Box.createRigidArea(new Dimension(0,40)));
 
+        //JOSH: This section should be its own function
         resultsPanel = new JPanel();
         resultsLabels = new ArrayList<>();
         resultsPanel.setLayout(new GridLayout(0, 2));
         resultsPanel.add(new JLabel("Guesses"));
         resultsPanel.add(new JLabel("Games"));
-        for(int binIndex=0; binIndex<BIN_EDGES.length; binIndex++){
-            String binName;
-            if(binIndex == BIN_EDGES.length-1){
-                // last bin
-                binName = BIN_EDGES[binIndex] + " or more";
-            }
-            else{
-                int upperBound = BIN_EDGES[binIndex+1] - 1;
-                if(upperBound > BIN_EDGES[binIndex]){
-                    binName = BIN_EDGES[binIndex] + "-" + upperBound;
-                }
-                else{
-                    binName = Integer.toString(BIN_EDGES[binIndex]);
-                }
-            }
 
-            resultsPanel.add(new JLabel(binName));
-            JLabel result = new JLabel("--");
-            resultsLabels.add(result);
-            resultsPanel.add(result);
-        }
+        createLabels();
 
         resultsPanel.setMinimumSize(new Dimension(120, 120));
         this.add(resultsPanel);
@@ -90,28 +73,39 @@ public class StatsPanel extends JPanel {
         }
     }
 
+    //Since not testing any UI elements, not really sure breaking into any more functions makes sense
+    private void createLabels()
+    {
+        for(int binIndex=0; binIndex<BIN_EDGES.length; binIndex++){
+            String binName;
+            if(binIndex == BIN_EDGES.length-1){
+                // last bin
+                binName = BIN_EDGES[binIndex] + " or more";
+            }
+            else{
+                int upperBound = BIN_EDGES[binIndex+1] - 1;
+                if(upperBound > BIN_EDGES[binIndex]){
+                    binName = BIN_EDGES[binIndex] + "-" + upperBound;
+                }
+                else{
+                    binName = Integer.toString(BIN_EDGES[binIndex]);
+                }
+            }
+
+            resultsPanel.add(new JLabel(binName));
+            JLabel result = new JLabel("--");
+            resultsLabels.add(result);
+            resultsPanel.add(result);
+        }
+    }
+
     private void updateResultsPanel(){
         clearResults();
-
         GameStats stats = new StatsFile();
 
         for(int binIndex=0; binIndex<BIN_EDGES.length; binIndex++){
-            final int lowerBound = BIN_EDGES[binIndex];
-            int numGames = 0;
 
-            if(binIndex == BIN_EDGES.length-1){
-                // last bin
-                // Sum all the results from lowerBound on up
-                for(int numGuesses=lowerBound; numGuesses<stats.maxNumGuesses(); numGuesses++){
-                    numGames += stats.numGames(numGuesses);
-                }
-            }
-            else{
-                int upperBound = BIN_EDGES[binIndex+1];
-                for(int numGuesses=lowerBound; numGuesses <= upperBound; numGuesses++) {
-                    numGames += stats.numGames(numGuesses);
-                }
-            }
+            int numGames = stats.findTotalGamesInBin(BIN_EDGES,binIndex);
 
             JLabel resultLabel = resultsLabels.get(binIndex);
             resultLabel.setText(Integer.toString(numGames));

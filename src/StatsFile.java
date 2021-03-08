@@ -1,7 +1,9 @@
 import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
 
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
@@ -21,9 +23,11 @@ public class StatsFile extends GameStats {
     // the past 30 days where the person took that many guesses
     private SortedMap<Integer, Integer> statsMap;
 
+    //Tough to say if we need anymore smaller functions, might be worth to seperate the statsMap.put line, but I feel
+    // like you are just sending all params to it anyway.
     public StatsFile(){
         statsMap = new TreeMap<>();
-        LocalDateTime limit = LocalDateTime.now().minusDays(30);
+        LocalDateTime limit = generateLimit();
 
         try (CSVReader csvReader = new CSVReader(new FileReader(FILENAME))) {
             String[] values = null;
@@ -55,6 +59,11 @@ public class StatsFile extends GameStats {
         }
     }
 
+    private LocalDateTime generateLimit()
+    {
+        return  LocalDateTime.now().minusDays(30);
+    }
+
     @Override
     public int numGames(int numGuesses) {
         return statsMap.getOrDefault(numGuesses, 0);
@@ -64,4 +73,57 @@ public class StatsFile extends GameStats {
     public int maxNumGuesses(){
         return statsMap.lastKey();
     }
+
+    @Override
+    public void recordGame(GameResult result) {
+        // write stats to file
+        try (CSVWriter writer = new CSVWriter(new FileWriter(StatsFile.FILENAME, true))) {
+
+            String[] record = new String[2];
+            record[0] = LocalDateTime.now().toString();
+            record[1] = Integer.toString(result.numGuesses);
+
+            writer.writeNext(record);
+        } catch (IOException e) {
+            // NOTE: In a full implementation, we would log this error and possibly alert the user
+            // NOTE: For this project, you do not need unit tests for handling this exception.
+        }
+    }
+
+    @Override
+    public int findTotalGamesInBin(int[] BIN_EDGES,int binIndex)
+    {
+        final int lowerBound = BIN_EDGES[binIndex];
+
+        int numGames = 0;
+
+        if(binIndex == BIN_EDGES.length-1) {
+            // last bin
+            // Sum all the results from lowerBound on up
+            numGames += findLastBinNum(lowerBound);
+        }
+        else{
+            int upperBound = BIN_EDGES[binIndex+1];
+            numGames+=findNonLastBinNum(upperBound,lowerBound);
+        }
+
+        return numGames;
+    }
+
+    private int findLastBinNum(int lowerBound) {
+        int total = 0;
+        for (int numGuesses = lowerBound; numGuesses < maxNumGuesses(); numGuesses++) {
+            total += numGames(numGuesses);
+        }
+        return total;
+    }
+
+    private int findNonLastBinNum(int upperBound,int lowerBound) {
+        int total = 0;
+        for (int numGuesses = lowerBound; numGuesses <= upperBound; numGuesses++) {
+            total += numGames(numGuesses);
+        }
+        return total;
+    }
+
 }

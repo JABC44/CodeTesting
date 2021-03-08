@@ -13,16 +13,23 @@ public class HumanGuessesGame {
     private int numGuesses;
     private boolean gameIsDone; // true iff makeGuess has been called with the target value
 
-    HumanGuessesGame(){
-        Random randGen = new Random();
-        this.target = randGen.nextInt(UPPER_BOUND) + 1;
+    //JOSH: Will probs want to create stub for random here
+
+    HumanGuessesGame()
+    {
+        this(new Random());
+    }
+
+    HumanGuessesGame(Random rand){
+        this.target = rand.nextInt(UPPER_BOUND) + 1;
 
         numGuesses = 0;
         gameIsDone = false;
     }
 
+    //JOSH: Perhaps seperate increment and checks, and return.
     GuessResult makeGuess(int value){
-        numGuesses += 1;
+        incrementNumGuesses();
 
         if(value < target){
             return GuessResult.LOW;
@@ -40,5 +47,15 @@ public class HumanGuessesGame {
 
     boolean isDone(){
         return gameIsDone;
+    }
+
+    void incrementNumGuesses()
+    {
+        numGuesses += 1;
+    }
+
+    int getTarget()
+    {
+        return target;
     }
 }

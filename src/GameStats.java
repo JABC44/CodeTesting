@@ -5,6 +5,7 @@
  *
  * You can edit this file, but the two abstract methods listed below must remain
  */
+
 public abstract class GameStats {
     /**
      * @return the number of games played that took numGuesses
@@ -15,4 +16,8 @@ public abstract class GameStats {
      * @return the maximum number of guesses that any game took
      */
     public abstract int maxNumGuesses();
+
+    public abstract void recordGame(GameResult result);
+
+    public abstract int findTotalGamesInBin(int[] BIN_EDGES,int currentBin);
 }
