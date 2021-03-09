@@ -59,9 +59,14 @@ public class StatsFile extends GameStats {
         }
     }
 
-    private LocalDateTime generateLimit()
+    public LocalDateTime generateLimit()
     {
         return  LocalDateTime.now().minusDays(30);
+    }
+
+    public LocalDateTime generateLimit(LocalDateTime timeTest)
+    {
+        return  timeTest.minusDays(30);
     }
 
     @Override

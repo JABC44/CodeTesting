@@ -1,5 +1,7 @@
 import org.junit.Test;
 import java.time.DateTimeException;
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestStatsFile {
@@ -45,4 +47,52 @@ public class TestStatsFile {
         assertNotEquals(DateTimeException.class, testFile);
     }
 
+    @Test
+    public void TreeMapInsert1(){
+        StatsFile testFile = new StatsFile();
+        testFile.treeMapPut(25);
+        assertEquals(25, testFile.maxNumGuesses());
+    }
+
+    @Test
+    public void TreeMapValueTest(){
+        StatsFile testFile = new StatsFile();
+        testFile.treeMapPut(26);
+        assertEquals(1, testFile.numGames(26));
+    }
+
+    @Test
+    public void TreeMapValueExistingDataTest(){
+        StatsFile testFile = new StatsFile();
+        assertEquals(1, testFile.numGames(2));
+    }
+
+    @Test
+    public void TreeMapMultipleNewValueTest(){
+        StatsFile testFile = new StatsFile();
+        testFile.treeMapPut(26);
+        testFile.treeMapPut(26);
+        assertEquals(2, testFile.numGames(26));
+    }
+
+    @Test
+    public void TimeEqualTest(){
+        StatsFile testFile = new StatsFile();
+        LocalDateTime testDate = LocalDateTime.now().minusDays(30);
+        assertEquals(testDate.minusDays(30), testFile.generateLimit(testDate));
+    }
+
+    @Test
+    public void TimeBeforeTest(){
+        StatsFile testFile = new StatsFile();
+        LocalDateTime testDate = LocalDateTime.now().minusDays(30);
+        assertEquals(testDate.minusDays(35), testFile.generateLimit(testDate));
+    }
+
+    @Test
+    public void TimeAfterTest(){
+        StatsFile testFile = new StatsFile();
+        LocalDateTime testDate = LocalDateTime.now().plusDays(30);
+        assertEquals(testDate, testFile.generateLimit(testDate));
+    }
 }
