@@ -95,4 +95,32 @@ public class TestStatsFile {
         LocalDateTime testDate = LocalDateTime.now().plusDays(30);
         assertEquals(testDate, testFile.generateLimit(testDate));
     }
+
+    @Test
+    public void TreeAddBeforeTimeTest(){
+        StatsFile testFile = new StatsFile();
+        LocalDateTime testDate = LocalDateTime.now().minusDays(15);
+        testFile.limitTest(testDate, LocalDateTime.now(), 28);
+        assertEquals(1, testFile.numGames(28));
+    }
+
+    @Test
+    public void TreeAddAfterTimeTest(){
+        StatsFile testFile = new StatsFile();
+        LocalDateTime testDate = LocalDateTime.now().plusDays(15);
+        testFile.limitTest(testDate, LocalDateTime.now(), 28);
+        assertEquals(1, testFile.numGames(28));
+    }
+
+    @Test
+    public void findLastBinTest(){
+        StatsFile testFile = new StatsFile();
+        assertEquals(0, testFile.findLastBinNum(11));
+    }
+
+    @Test
+    public void findNonLastBinTest(){
+        StatsFile testFile = new StatsFile();
+        assertEquals(5, testFile.findNonLastBinNum(15, 5));
+    }
 }

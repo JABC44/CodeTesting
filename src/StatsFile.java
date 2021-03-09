@@ -37,9 +37,7 @@ public class StatsFile extends GameStats {
                     LocalDateTime timestamp = LocalDateTime.parse(values[0]);
                     int numGuesses = Integer.parseInt(values[1]);
 
-                    if (timestamp.isBefore(limit)) {
-                        treeMapPut(numGuesses);
-                    }
+                    limitTest(timestamp, limit, numGuesses);
                 }
                 catch(NumberFormatException nfe){
                     // NOTE: In a full implementation, we would log this error and possibly alert the user
@@ -56,6 +54,16 @@ public class StatsFile extends GameStats {
         } catch (IOException e) {
             // NOTE: In a full implementation, we would log this error and alert the user
             // NOTE: For this project, you do not need unit tests for handling this exception.
+        }
+    }
+
+    public boolean limitTest(LocalDateTime timestamp, LocalDateTime limit, int numGuesses){
+        if (timestamp.isBefore(limit)) {
+            treeMapPut(numGuesses);
+            return true;
+        }
+        else{
+            return false;
         }
     }
 
@@ -119,7 +127,7 @@ public class StatsFile extends GameStats {
         return numGames;
     }
 
-    private int findLastBinNum(int lowerBound) {
+    public int findLastBinNum(int lowerBound) {
         int total = 0;
         for (int numGuesses = lowerBound; numGuesses < maxNumGuesses(); numGuesses++) {
             total += numGames(numGuesses);
@@ -127,7 +135,7 @@ public class StatsFile extends GameStats {
         return total;
     }
 
-    private int findNonLastBinNum(int upperBound,int lowerBound) {
+    public int findNonLastBinNum(int upperBound,int lowerBound) {
         int total = 0;
         for (int numGuesses = lowerBound; numGuesses <= upperBound; numGuesses++) {
             total += numGames(numGuesses);
